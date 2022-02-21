@@ -22,7 +22,14 @@ io.on('connection', socket=>{
         console.log(roomId, userId);
         socket.join(roomId);
         socket.broadcast.to(roomId).emit('user-connected', userId);
+
+        // remove video if window closed.
+        socket.on('disconnect', ()=>{
+            socket.broadcast.to(roomId).emit('user-disconnected', userId)
+        })
     })
+
+
 })
 
 server.listen(3000);

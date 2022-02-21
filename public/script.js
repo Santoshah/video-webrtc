@@ -6,7 +6,7 @@ const myPeer = new Peer(undefined, {
 })
 const myVideo = document.createElement('video')
 myVideo.muted = true;
-
+const peers = {}
 // it will share screen
 // getDisplayMedia
 navigator.mediaDevices.getUserMedia({
@@ -21,12 +21,19 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', (userVideoStream)=>{
             addVideoStream(video, userVideoStream);
         })
+
+        
     })
 
     socket.on("user-connected", userId=>{
         connectToNewuser(userId, stream)
     });
 
+})
+
+socket.on('user-disconnected', userId=>{
+    console.log(userId)
+    if(peers[userId]) peers[userId].close();
 })
 
 // peerjs --port 443 (run this command at 443 because at 3001 it not connecting.)
@@ -55,4 +62,5 @@ function connectToNewuser(userId, stream){
     call.on("close", ()=>{
         video.remove();
     })
+    peers[userId] = call;
 }
